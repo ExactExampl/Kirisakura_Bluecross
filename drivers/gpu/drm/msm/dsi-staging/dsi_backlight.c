@@ -27,6 +27,7 @@
 
 #include "dsi_display.h"
 #include "dsi_panel.h"
+#include "exposure_adjustment.h"
 
 #ifdef CONFIG_KLAPSE
 #include "../sde/klapse.h"
@@ -470,10 +471,15 @@ static u32 dsi_backlight_calculate(struct dsi_backlight_config *bl,
 	set_rgb_slider(bl_lvl);
 #endif
 
+#ifdef CONFIG_EXPOSURE_ADJUSTMENT
+	if (ea_enabled)
+		bl_lvl = ea_panel_calc_backlight(bl_lvl);
+#endif
+
 	return bl_lvl;
 }
 
-static int dsi_backlight_update_status(struct backlight_device *bd)
+int dsi_backlight_update_status(struct backlight_device *bd)
 {
 	struct dsi_backlight_config *bl = bl_get_data(bd);
 	struct dsi_panel *panel = container_of(bl, struct dsi_panel, bl_config);
